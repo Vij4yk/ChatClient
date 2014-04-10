@@ -33,13 +33,13 @@ function chunkMessage(message)
 {
 	if(message.length <= 99)
 	{
-		return message.length+"\n"+message;
+		return message.length.toString()+"\n"+message;
 	}
 	else
 	{
 		if(message.length<=999)
 		{
-			return "C"+message.length+"\n"+message+"C0\n";
+			return "C"+message.length.toString()+"\n"+message+"C0\n";
 		}
 		else
 		{
@@ -54,7 +54,7 @@ function chunkMessage(message)
 				}
 				else
 				{
-					chunked += "C"+len+"\n"+ message.splice(message.length - len, message.length)+"C0\n";
+					chunked += "C"+len.toString()+"\n"+ message.splice(message.length - len, message.length)+"C0\n";
 					break;
 				}
 			}
