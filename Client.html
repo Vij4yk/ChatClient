@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title> Chat Client </title>
+    <style>
+      * { margin: 0; padding: 0; }
+    </style>
+  </head>
+  <body style="text-align: center;">
+    <div style="margin-left: auto; margin-right: auto; width: 500px; margin-top: 18px;">
+      <div id="chatclient" style="background-color: blue; width:500px;min-height:470px;">
+        <p style="font-weight: bold;text-transform: uppercase; font-size: 32px; ">
+          The Ultimate Chat Client
+        </p>
+		
+        <div id="messages" style="border: 2px solid green; margin: 12px; height: 300px; background-color: lightgray; text-align: left; font-family: Courier New, sans-serif;">
+          <span style="color: purple;">parishilton:</span> that's hot, ladygaga  &lt;3<br />
+        </div>
+
+        <div style="text-align: left; margin-left:12px;">Send a private message to "parishilton" (to send, hit ENTER or click SEND)</div>
+        <div id="input" style="border: 2px solid green;width:81%;float:left; margin: 0 12px; height: 42px; background-color: white; text-align: left; font-family: Courier New, sans-serif;">
+          paris, between u and me, i think selenagomez is an idiot
+        </div>
+        <input type="button" title="send a private message to parishilton" value="SEND" id="send" style="float: left;padding:13px 7px;"/>
+
+        <div style="clear: both;padding-bottom: 18px;"></div>
+      </div>
+    </div>
+  </body>
+</html>
+<script>
+function chunkMessage(message)
+{
+	if(message.length <= 99)
+	{
+		return message.length+"\n"+message;
+	}
+	else
+	{
+		if(message.length<=999)
+		{
+			return "C"+message.length+"\n"+message+"C0\n";
+		}
+		else
+		{
+			var len = message.length;
+			var chunked = "";
+			while(len > 0)
+			{
+				if(len > 999)
+				{
+					chunked += "C999\n"+message.splice(message.length - len, message.length - len + 999);
+					len -= 999;
+				}
+				else
+				{
+					chunked += "C"+len+"\n"+ message.splice(message.length - len, message.length)+"C0\n";
+					break;
+				}
+			}
+			
+			
+			
+		}
+	}
+}
+</script>
+
