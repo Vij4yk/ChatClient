@@ -2,33 +2,106 @@
 <html lang="en">
   <head>
     <title> Chat Client </title>
-    <style>
-      * { margin: 0; padding: 0; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="main.css"/>
   </head>
-  <body style="text-align: center;">
-    <div style="margin-left: auto; margin-right: auto; width: 500px; margin-top: 18px;">
-      <div id="chatclient" style="background-color: blue; width:500px;min-height:470px;">
-        <p style="font-weight: bold;text-transform: uppercase; font-size: 32px; ">
-          The Ultimate Chat Client
-        </p>
-		
-        <div id="messages" style="border: 2px solid green; margin: 12px; height: 300px; background-color: lightgray; text-align: left; font-family: Courier New, sans-serif;">
-          <span style="color: purple;">parishilton:</span> that's hot, ladygaga  &lt;3<br />
-        </div>
+  <body>
+    
+	  <!--
+	  	<div id="login" style="display:none;">
+	  	<form id="loginform" action="">
+	  		<p>Please enter username:</p>
+	  		<input id="username" type="text" name="username" autofocus>
+	  		<input type="button" name="submit" value="Login" onclick="login()">
+	  	</form>
+	  	</div>-->
 
-        <div style="text-align: left; margin-left:12px;">Send a private message to "parishilton" (to send, hit ENTER or click SEND)</div>
-        <div id="input" style="border: 2px solid green;width:81%;float:left; margin: 0 12px; height: 42px; background-color: white; text-align: left; font-family: Courier New, sans-serif;">
-          paris, between u and me, i think selenagomez is an idiot
-        </div>
-        <input type="button" title="send a private message to parishilton" value="SEND" id="send" style="float: left;padding:13px 7px;"/>
+	<div class="page">
+		<div class="navbar">
+	    	<ul>
+	    		<li>
+	    			<a href="#"><img class="power" src="power.png"></a>
+	    		</li>
+	    	</ul>
+	    </div>
 
-        <div style="clear: both;padding-bottom: 18px;"></div>
-      </div>
+		<div class="container">
+			<div class="users">
+				<div class="user_header">Online Users
+					<div class="person">
+						<ul>
+							<li><img class="small_avatar" src="avatar.png">Matt Hancock</li>
+							<li><img class="small_avatar" src="avatar2.png">Eric Lowry</li>
+							<li><img class="small_avatar" src="avatar3.png">Ben Ciummo</li>
+						</ul>
+					</div>
+				</div>
+	   		</div>
+	   		<div class="chatting">
+	   			<div class="window">
+	   				<div class="message">
+	   					<img class="avatar" src="avatar.png">
+		   				<div class="from_user">Matthew Hancock</div>
+	   					<div class="from_message">This CSS looks so nice</div>
+	   				</div>
+	   				<div class="message">
+	   					<img class="avatar" src="avatar2.png">
+		   				<div class="from_user">Eric Lowry</div>
+	   					<div class="from_message">I like this CSS too</div>
+	   				</div>
+	   				<div class="message">
+	   					<img class="avatar" src="avatar3.png">
+		   				<div class="from_user">Ben Ciummo</div>
+	   					<div class="from_message">Garbage!</div>
+	   				</div>
+	   			</div>
+	   			<div class="input_area">
+	   				<input class="box" placeholder=" Click 'SEND' to send message">
+	   				<input type="button" class="button" value="SEND">
+	   			</div>
+	   		</div>
+		</div>
+		<!--
+	    
+
+
+	    <div class="chatting" id="chat">
+	        <div class="messages" id="messages" style="background-color: lightgray; text-align: left; font-family: Courier New, sans-serif;">
+	         <span style="color: purple;">parishilton:</span> that's hot, ladygaga  &lt;3<br />
+	        </div>
+
+	        <div style="text-align: left; margin-left:12px;">Send a private message to "parishilton" (to send click SEND)</div>
+	        <input id="input" style="border: 2px solid green;width:81%;float:left; margin: 0 12px; background-color: white; text-align: left; font-family: Courier New, sans-serif; font-size:16px;">
+	        <input onclick="setMessage()" type="button" title="send a private message to parishilton" value="SEND" id="send" style="float: left;padding:13px 7px;"/>
+	        <div style="clear: both;padding-bottom: 18px;"></div>
+	    </div>
+	    -->
     </div>
   </body>
 </html>
-<script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script type="text/javascript">
+$('#loginform').submit(function(event) {
+	event.preventDefault();
+	login();	
+});
+
+function login()
+{
+	var name = document.getElementById("username").value;
+	$('#login').hide();
+	$('#chat').show();
+	$('#welcome').text("Welcome, " + name);
+}
+
+function setMessage()
+{
+	var view = document.getElementById("messages");
+	var input = document.getElementById("input");
+	view.innerText += chunkMessage(input.value);
+	input.value = "";
+	input.focus();
+}
+
 function chunkMessage(message)
 {
 	if(message.length <= 99)
