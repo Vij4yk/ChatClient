@@ -8,9 +8,10 @@
     
 	<div class="login" id="login">
 		<form id="loginform" action="">
+			<p class="error" id="error">Username is invalid</p>
 			<span>Please enter username:</span>
-			<input class="box form_box" id="username" type="text" name="username" autofocus>
-			<input class="button form_button" type="button" name="submit" value="Login" onclick="login()">
+			<input class="box" id="username" type="text" name="username" autofocus>
+			<input class="button" type="button" name="submit" value="Login" onclick="login()">
 		</form>
 	</div>
 
@@ -34,9 +35,12 @@
 						<li><img class="small_avatar" src="avatar3.png">Ben Ciummo</li>
 					</ul>
 				</div>
+				<div class="input_area">
+					<input type="button" class="button" value="Update Users">
+				</div>
 	   		</div>
 	   		<div class="chatting">
-	   			<div class="window">
+	   			<div class="window" id="messages">
 	   				<div class="message">
 	   					<img class="avatar" src="avatar.png">
 		   				<div class="from_user">Matthew Hancock</div>
@@ -54,8 +58,10 @@
 	   				</div>
 	   			</div>
 	   			<div class="input_area">
-	   				<input type="text" class="box" placeholder="Click 'SEND' to send message">
-	   				<input type="button" class="button" value="SEND"><!--onclick="setMessage()"-->
+	   				<form id="sendform" action="">
+						<input type="text" class="box" id="input" placeholder="Click 'SEND' to send message">
+	   					<input type="button" class="button" name="submit" value="SEND" onclick="setMessage()">
+					</form>
 	   			</div>
 	   		</div>
 		</div>
@@ -70,28 +76,59 @@ $('#loginform').submit(function(event) {
 	login();	
 });
 
+$('#sendform').submit(function(event) {
+	event.preventDefault();
+	setMessage();	
+});
+
 function login()
 {
 	var name = $('#username').val();
-	$('#login').hide();
-	$('#chat').show();
-	$('#name').text("Welcome, " + name);
-	$('#username').val('');
+	if(name == "")
+		$('#error').show();
+	/*else if(username already used)
+	{
+
+	}*/
+	else
+	{
+		window.username = name;
+		$('#login').hide();
+		$('#chat').show();
+		$('#name').text("Welcome, " + name);
+		$('#input').focus();
+	}
 }
 
 function logout()
 {
+	$('#username').val('');
+	$('#error').hide();
 	$('#login').show();
 	$('#chat').hide();
 }
 
 function setMessage()
 {
-	var view = document.getElementById("messages");
-	var input = document.getElementById("input");
-	view.innerText += chunkMessage(input.value);
-	input.value = "";
-	input.focus();
+	var input = $('#input');
+	if(input.val() != "")
+	{
+		var message = chunkMessage(input.val());
+		$('#messages').append(makeMessage(message));
+		input.val('');
+		input.focus();
+		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+	}
+}
+
+function makeMessage(message)
+{
+	var html = "<div class=\"message\">";
+	html += "<img class=\"avatar\" src=\"avatar.png\">";
+	html = html + "<div class=\"from_user\">" + window.username + "</div>";
+	html = html + "<div class=\"from_message\">" + message + "</div>";
+	html += "</div>";
+	return html;
 }
 
 function chunkMessage(message)
