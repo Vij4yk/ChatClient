@@ -26,17 +26,16 @@
 
 		<div class="container">
 			<div class="users">
-				<div class="user_header">Online Users
-					<div class="person">
-						<ul>
-							<li><img class="small_avatar" src="avatar.png">Matt Hancock</li>
-							<li><img class="small_avatar" src="avatar2.png">Eric Lowry</li>
-							<li><img class="small_avatar" src="avatar3.png">Ben Ciummo</li>
-						</ul>
-					</div>
+				<div class="user_header">Online Users</div>
+				<div class="person">
+					<ul>
+						<li><img class="small_avatar" src="avatar.png">Matt Hancock</li>
+						<li><img class="small_avatar" src="avatar2.png">Eric Lowry</li>
+						<li><img class="small_avatar" src="avatar3.png">Ben Ciummo</li>
+					</ul>
 				</div>
 	   		</div>
-	   		<div class="chatting">
+	   		<div class="chatting" id="chat">
 	   			<div class="window">
 	   				<div class="message">
 	   					<img class="avatar" src="avatar.png">
@@ -56,28 +55,14 @@
 	   			</div>
 	   			<div class="input_area">
 	   				<input class="box" placeholder=" Click 'SEND' to send message">
-	   				<input type="button" class="button" value="SEND">
+	   				<input type="button" class="button" value="SEND"><!--onclick="setMessage()"-->
 	   			</div>
 	   		</div>
 		</div>
-		<!--
-	    
-
-
-	    <div class="chatting" id="chat">
-	        <div class="messages" id="messages" style="background-color: lightgray; text-align: left; font-family: Courier New, sans-serif;">
-	         <span style="color: purple;">parishilton:</span> that's hot, ladygaga  &lt;3<br />
-	        </div>
-
-	        <div style="text-align: left; margin-left:12px;">Send a private message to "parishilton" (to send click SEND)</div>
-	        <input id="input" style="border: 2px solid green;width:81%;float:left; margin: 0 12px; background-color: white; text-align: left; font-family: Courier New, sans-serif; font-size:16px;">
-	        <input onclick="setMessage()" type="button" title="send a private message to parishilton" value="SEND" id="send" style="float: left;padding:13px 7px;"/>
-	        <div style="clear: both;padding-bottom: 18px;"></div>
-	    </div>
-	    -->
     </div>
   </body>
 </html>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script type="text/javascript">
 $('#loginform').submit(function(event) {
