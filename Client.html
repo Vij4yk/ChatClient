@@ -6,21 +6,21 @@
   </head>
   <body>
     
-	  <!--
-	  	<div id="login" style="display:none;">
-	  	<form id="loginform" action="">
-	  		<p>Please enter username:</p>
-	  		<input id="username" type="text" name="username" autofocus>
-	  		<input type="button" name="submit" value="Login" onclick="login()">
-	  	</form>
-	  	</div>-->
+	<div class="login" id="login">
+		<form id="loginform" action="">
+			<span>Please enter username:</span>
+			<input class="box form_box" id="username" type="text" name="username" autofocus>
+			<input class="button form_button" type="button" name="submit" value="Login" onclick="login()">
+		</form>
+	</div>
 
-	<div class="page">
+	<div class="page" id="chat">
 		<div class="navbar">
 	    	<ul>
 	    		<li>
-	    			<a href="#"><img class="power" src="power.png"></a>
+	    			<a onclick="logout()"><img class="power" src="power.png"></a>
 	    		</li>
+	    		<li class="name" id="name">Welcome, Matthew Hancock</li>
 	    	</ul>
 	    </div>
 
@@ -35,7 +35,7 @@
 					</ul>
 				</div>
 	   		</div>
-	   		<div class="chatting" id="chat">
+	   		<div class="chatting">
 	   			<div class="window">
 	   				<div class="message">
 	   					<img class="avatar" src="avatar.png">
@@ -72,10 +72,17 @@ $('#loginform').submit(function(event) {
 
 function login()
 {
-	var name = document.getElementById("username").value;
+	var name = $('#username').val();
 	$('#login').hide();
 	$('#chat').show();
-	$('#welcome').text("Welcome, " + name);
+	$('#name').text("Welcome, " + name);
+	$('#username').val('');
+}
+
+function logout()
+{
+	$('#login').show();
+	$('#chat').hide();
 }
 
 function setMessage()
