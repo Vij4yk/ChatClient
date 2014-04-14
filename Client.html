@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+  	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <title> Chat Client </title>
-    <link rel="stylesheet" type="text/css" href="main.css"/>
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  	<script type="text/javascript" src="client.js"></script>
   </head>
   <body>
-    
 	<div class="login" id="login">
 		<form id="loginform" action="">
 			<p class="error" id="error">Username is invalid</p>
-			<span>Please enter username:</span>
-			<input class="box" id="username" type="text" name="username" autofocus>
-			<input class="button" type="button" name="submit" value="Login" onclick="login()">
+			<p>Please enter username:</p>
+				<div>
+					<input class="box" id="username" type="text" name="username">
+					<input class="button" type="submit" name="submit" value="Login">
+				</div>
 		</form>
 	</div>
 
@@ -19,7 +23,7 @@
 		<div class="navbar">
 	    	<ul>
 	    		<li>
-	    			<a onclick="logout()"><img class="power" src="power.png"></a>
+	    			<a onclick="logout()"><img class="power" src="power.png" alt="Logout"></a>
 	    		</li>
 	    		<li class="name" id="name">Welcome, Matthew Hancock</li>
 	    	</ul>
@@ -27,40 +31,42 @@
 
 		<div class="container">
 			<div class="users">
-				<div class="user_header">Online Users</div>
+				<div class="user_header">Online Users
+					<div class="sub_header">Click one below</div>
+				</div>
 				<div class="person">
-					<ul>
-						<li><img class="small_avatar" src="avatar.png">Matt Hancock</li>
-						<li><img class="small_avatar" src="avatar2.png">Eric Lowry</li>
-						<li><img class="small_avatar" src="avatar3.png">Ben Ciummo</li>
+					<ul id="users">
+						<li>No users online</li>
 					</ul>
 				</div>
 				<div class="input_area">
-					<input type="button" class="button" value="Update Users">
+					<input type="button" class="button" value="Update Users" onclick="update()">
 				</div>
 	   		</div>
 	   		<div class="chatting">
 	   			<div class="window" id="messages">
-	   				<div class="message">
-	   					<img class="avatar" src="avatar.png">
-		   				<div class="from_user">Matthew Hancock</div>
-	   					<div class="from_message">This CSS looks so nice</div>
+	   				<div class="message" onclick="openWindow('Matthew Hancock')">
+	   					<img class="avatar_self" src="avatar1.png" alt="Matt Hancock">
+		   				<div class="from_user_self">Matthew Hancock</div>
+	   					<div class="from_message_self">This CSS looks so nice</div>
 	   				</div>
-	   				<div class="message">
-	   					<img class="avatar" src="avatar2.png">
+	   				<div class="message" onclick="openWindow('Eric Lowry')">
+	   					<img class="avatar" src="avatar2.png" alt="Eric Lowry">
 		   				<div class="from_user">Eric Lowry</div>
 	   					<div class="from_message">I like this CSS too</div>
 	   				</div>
-	   				<div class="message">
-	   					<img class="avatar" src="avatar3.png">
+	   				<div class="message" onclick="openWindow('Ben Ciummo')">
+	   					<img class="avatar" src="avatar3.png" alt="Ben Ciummo">
 		   				<div class="from_user">Ben Ciummo</div>
 	   					<div class="from_message">Garbage!</div>
 	   				</div>
 	   			</div>
 	   			<div class="input_area">
 	   				<form id="sendform" action="">
-						<input type="text" class="box" id="input" placeholder="Click 'SEND' to send message">
-	   					<input type="button" class="button" name="submit" value="SEND" onclick="setMessage()">
+	   					<div>
+							<input type="text" class="box" id="input" placeholder="Press 'Enter' or click 'SEND' to send message">
+		   					<input type="button" class="button" name="submit" value="SEND" onclick="sendMessage()">
+	   					</div>
 					</form>
 	   			</div>
 	   		</div>
@@ -68,103 +74,3 @@
     </div>
   </body>
 </html>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script type="text/javascript">
-$('#loginform').submit(function(event) {
-	event.preventDefault();
-	login();	
-});
-
-$('#sendform').submit(function(event) {
-	event.preventDefault();
-	setMessage();	
-});
-
-function login()
-{
-	var name = $('#username').val();
-	if(name == "")
-		$('#error').show();
-	/*else if(username already used)
-	{
-
-	}*/
-	else
-	{
-		window.username = name;
-		$('#login').hide();
-		$('#chat').show();
-		$('#name').text("Welcome, " + name);
-		$('#input').focus();
-	}
-}
-
-function logout()
-{
-	$('#username').val('');
-	$('#error').hide();
-	$('#login').show();
-	$('#chat').hide();
-}
-
-function setMessage()
-{
-	var input = $('#input');
-	if(input.val() != "")
-	{
-		var message = chunkMessage(input.val());
-		$('#messages').append(makeMessage(message));
-		input.val('');
-		input.focus();
-		$('#messages').scrollTop($('#messages')[0].scrollHeight);
-	}
-}
-
-function makeMessage(message)
-{
-	var html = "<div class=\"message\">";
-	html += "<img class=\"avatar\" src=\"avatar.png\">";
-	html = html + "<div class=\"from_user\">" + window.username + "</div>";
-	html = html + "<div class=\"from_message\">" + message + "</div>";
-	html += "</div>";
-	return html;
-}
-
-function chunkMessage(message)
-{
-	if(message.length <= 99)
-	{
-		return message.length.toString()+"\n"+message;
-	}
-	else
-	{
-		if(message.length<=999)
-		{
-			return "C"+message.length.toString()+"\n"+message+"C0\n";
-		}
-		else
-		{
-			var len = message.length;
-			var chunked = "";
-			while(len > 0)
-			{
-				if(len > 999)
-				{
-					chunked += "C999\n"+message.splice(message.length - len, message.length - len + 999);
-					len -= 999;
-				}
-				else
-				{
-					chunked += "C"+len.toString()+"\n"+ message.splice(message.length - len, message.length)+"C0\n";
-					break;
-				}
-			}
-			
-			
-			
-		}
-	}
-}
-</script>
-
