@@ -1,15 +1,89 @@
+if(this.MozWebSocket)
+{
+	WebSocket = MozWebSocket;
+}
+var users = {};
+var username = "";
+var signin = true;
+
+var url = "ws://localhost:8787/chat";
+var socket = new WebSocket(url);
+
+socket.onopen = function()
+{
+	alert("OPEN");
+}
+
+socket.onmessage = function(msg)
+{
+	var whole_message = msg.data.toString().trim();
+	if(signin)
+	{
+		if(whole_message == "ERROR")
+		{
+			$('#error').fadeIn(400);
+			$('#username').focus();
+		}
+		else
+		{
+			users[username] = 1;
+			signin = false;
+			$('#login').fadeOut(400, function()
+			{
+				$('#chat').fadeIn(400);
+				$('#name').text("Welcome, " + username);
+				$('#input').focus();
+
+				update();
+				window.ID = window.setInterval(function(){update();}, 2000);
+			});
+		}
+	}
+	else if(whole_message.substring(0,9) == "BROADCAST")
+	{
+		var parts = whole_message.split(" ", 3);
+		var from_user = parts[2];
+		var starting = 16 + from_user.length;
+		var message = whole_message.substring(starting);
+		if(from_user == username)
+			$('#messages').append(makeMessageSelf(message));
+		else
+			$('#messages').append(makeMessageFrom(from_user, message));
+	}
+	else
+	{
+		executeUpdate(whole_message);
+	}
+}
+
+socket.onclose = function()
+{
+	if(username in users)
+	{
+		alert("Removing " + username);
+		delete [username];
+	}
+}
+
+socket.onerror = function(msg)
+{
+	alert(msg);
+}
+
 $(document).ready(function() {
 	$('#username').focus();
 
-	$('#loginform').submit(function(event) {
+	$('#loginform').submit(function(event)
+	{
 		event.preventDefault();
 		login();	
 	});
 
-	$('#sendform').submit(function(event) {
+	$('#sendform').submit(function(event)
+	{
 		event.preventDefault();
 		sendMessage();	
-	});
+	}); 
 });
 
 function login()
@@ -20,36 +94,27 @@ function login()
 		$('#error').fadeIn(400);
 		$('#username').focus();
 	}
-	/*else if(username already used)
-	{
-
-	}*/
 	else
 	{
-		window.username = name;
-		$('#login').fadeOut(400, function()
-		{
-			$('#chat').fadeIn(400);
-			$('#name').text("Welcome, " + name);
-			$('#input').focus();
-
-			// add user through web socket
-
-			update();
-		});
+		username = name;
+		$('#username').val('');
+		socket.send("ME IS " + name);
 	}
 }
 
 function logout()
 {
+	clearInterval(window.ID);
+	socket.close();
+	
 	$('#error').hide();
 	$('#chat').fadeOut(400, function()
 	{
 		$('#login').fadeIn(400);
 		$('#input').val('');
-		$('#username').val('');
 		$('#username').focus();
-		// remove user through web socket
+		socket = new WebSocket(url);
+		// remove user on web socket server
 	});
 }
 
@@ -59,23 +124,37 @@ function sendMessage()
 	if(input.val() != "" || input.val() == 'undefined')
 	{
 		var message = chunkMessage(input.val());
+		if(message == false)
+			alert("Message length must be less than 99");
+		else
+		{
+			socket.send("BROADCAST " + message);
 
-		// send message to web socket
-
-		$('#messages').append(makeMessageSelf(message));
-		input.val('');
-		input.focus();
-		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+			input.val('');
+			input.focus();
+			$('#messages').scrollTop($('#messages')[0].scrollHeight);
+		}
 	}
 }
 
 function makeMessageSelf(message)
 {
-	var html = "<div class=\"message\" onclick=\"openWindow('" + window.username + "')\">";
-	html += "<img class=\"avatar_self\" src=\"avatar1.png\"  alt=\"" + window.username + "\">";
-	html = html + "<div class=\"from_user_self\">" + window.username + "</div>";
-	html = html + "<div class=\"from_message_self\">" + message + "</div>";
+	var html = '<div class="message" onclick="openWindow(\'' + username + '\')">';
+	html += '<img class="avatar_self" src="avatar1.png"  alt="' + username + '">';
+	html = html + '<div class="from_user_self">' + username + '</div>';
+	html = html + '<div class="from_message_self">' + message + '</div>';
 	html += "</div>";
+	return html;
+}
+
+function makeMessageFrom(user, message)
+{
+	var pic_num = users[user];
+	var html = '<div class="message" onclick="openWindow(\'' + user + '\')">';
+	html += '<img class="avatar" src="avatar' + pic_num + '.png"  alt="' + user + '">';
+	html = html + '<div class="from_user">' + user + '</div>';
+	html = html + '<div class="from_message">' + message + '</div>';
+	html += '</div>';
 	return html;
 }
 
@@ -83,41 +162,31 @@ function chunkMessage(message)
 {
 	if(message.length <= 99)
 	{
-		return message.length.toString()+"\n"+message;
+		return message;
 	}
 	else
 	{
-		if(message.length<=999)
-		{
-			return "C"+message.length.toString()+"\n"+message+"C0\n";
-		}
-		else
-		{
-			var len = message.length;
-			var chunked = "";
-			while(len > 0)
-			{
-				if(len > 999)
-				{
-					chunked += "C999\n"+message.splice(message.length - len, message.length - len + 999);
-					len -= 999;
-				}
-				else
-				{
-					chunked += "C"+len.toString()+"\n"+ message.splice(message.length - len, message.length)+"C0\n";
-					break;
-				}
-			}
-		}
+		return false;
 	}
 }
 
 function update()
 {
-	var users = ["Matthew Hancock", "Eric Lowry", "Ben Ciummo"];
+	socket.send("WHO HERE");
+}
+
+function executeUpdate(names)
+{
+	var returned = names.trim().split(",");
+	var counter = 2;
 	$('#users').empty();
-	$.each(users, function(i, name) {
-		var item = "<li><img class=\"small_avatar\" src=\"avatar" + (i+1) + ".png\">" + name + "</li>";
+	$.each(returned, function(i, name) {
+		if(name != username)
+		{
+			users[name] = counter;
+			counter++;
+		}
+		var item = '<li><img class="small_avatar" src="avatar' + users[name] + '.png">' + name + '</li>';
 		$('#users').append($(item).click(function() {
 			openWindow(name);
 		}));

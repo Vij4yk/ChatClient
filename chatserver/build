@@ -1,0 +1,1 @@
+gcc -g -Wall chat-server.c sha1-c/sha1.c base64.c -lm -o chat-server
