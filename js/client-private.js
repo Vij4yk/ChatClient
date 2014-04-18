@@ -1,18 +1,8 @@
-if(this.MozWebSocket)
-{
-	WebSocket = MozWebSocket;
-}
 var username = "";
 var to_user = "";
 
-var url = "ws://localhost:8787/chat";
-var socket = new WebSocket(url);
-
-socket.onopen = function()
-{
-	// nothing to do here
-}
-
+// Change this function
+/*
 socket.onmessage = function(msg)
 {
 	var whole_message = msg.data.toString().trim();
@@ -29,21 +19,12 @@ socket.onmessage = function(msg)
 			$('#messages').append(makeMessageFrom(from_user, message));
 	}
 }
-
-socket.onclose = function()
-{
-	// nothing to do here
-}
-
-socket.onerror = function(msg)
-{
-	alert(msg);
-}
-
+*/
 $(document).ready(function() {
 	parseURL(location.search);
 
 	$('#name').text("Welcome, " + username);
+	$('input').attr("placeholder", "Press 'Enter' or click 'SEND' to send " + to_user + " a message");
 
 	$('#sendform').submit(function(event)
 	{
@@ -77,7 +58,6 @@ function parseURL(query)
 
 function logout()
 {
-	clearInterval(window.ID);
 	socket.close();
 	window.close();
 }
