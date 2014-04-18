@@ -79,7 +79,23 @@ $(document).ready(function() {
 	{
 		event.preventDefault();
 		sendMessage();	
-	}); 
+	});
+
+	$('#smile').hover(function()
+	{
+		$(this).attr('src','images/smile_hover.png');
+	},
+	function(){
+      $(this).attr('src','images/smile.png')
+    });
+
+    $('#camera').hover(function()
+	{
+		$(this).attr('src','images/camera_hover.png');
+	},
+	function(){
+      $(this).attr('src','images/camera.png')
+    });
 });
 
 function login()
@@ -134,7 +150,7 @@ function sendMessage()
 function makeMessageSelf(message)
 {
 	var html = '<div class="message">';
-	html += '<img class="avatar_self" src="avatar1.png"  alt="' + username + '">';
+	html += '<img class="avatar_self" src="images/avatar1.png"  alt="' + username + '">';
 	html = html + '<div class="from_user_self">' + username + '</div>';
 	html = html + '<div class="from_message_self">' + message + '</div>';
 	html += "</div>";
@@ -145,7 +161,7 @@ function makeMessageFrom(user, message)
 {
 	var pic_num = users[user];
 	var html = '<div class="message" onclick="openWindow(\'' + user + '\')">';
-	html += '<img class="avatar" src="avatar' + pic_num + '.png"  alt="' + user + '">';
+	html += '<img class="avatar" src="images/avatar' + pic_num + '.png"  alt="' + user + '">';
 	html = html + '<div class="from_user">' + user + '</div>';
 	html = html + '<div class="from_message">' + message + '</div>';
 	html += '</div>';
@@ -180,7 +196,7 @@ function executeUpdate(names)
 			users[name] = counter;
 			counter++;
 		}
-		var item = '<li><img class="small_avatar" src="avatar' + users[name] + '.png">' + name + '</li>';
+		var item = '<li><img class="small_avatar" src="images/avatar' + users[name] + '.png">' + name + '</li>';
 		if(name != username)
 		{
 			$('#users').append($(item).click(function() {

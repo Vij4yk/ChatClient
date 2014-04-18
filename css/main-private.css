@@ -153,7 +153,7 @@ html, body {
 
 .box {
 	position: absolute;
-	width: 82%;
+	width: 75%;
 	left: 10px;
 	height: 25px;
 	font-size: 14px;
@@ -165,7 +165,7 @@ html, body {
 	border-radius: 3px;
 	background-color: white;
 	padding-left: 10px;
-	padding-right: 10px;
+	padding-right: 65px;
 }
 
 .button {
@@ -207,4 +207,20 @@ html, body {
 	height: 45px;
 	margin-top: 4px;
 	padding: 0px 5px;
+}
+
+.input_image {
+	position: absolute;
+	width: auto;
+	height: 23px;
+	margin-top: 3px;
+	cursor: pointer;
+}
+
+.smile {
+	right: 128px;
+}
+
+.upload {
+	right: 95px;
 }

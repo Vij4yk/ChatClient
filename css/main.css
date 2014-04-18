@@ -236,7 +236,7 @@ ul {
 
 .box {
 	position: absolute;
-	width: 82%;
+	width: 74%;
 	left: 10px;
 	height: 25px;
 	font-size: 14px;
@@ -248,13 +248,14 @@ ul {
 	border-radius: 3px;
 	background-color: white;
 	padding-left: 10px;
-	padding-right: 10px;
+	padding-right: 65px;
 }
 
 #loginform .box {
 	position: relative;
 	width: 92%;
 	margin: 10px -10px;
+	padding-right: 10px;
 }
 
 .button {
@@ -313,4 +314,20 @@ ul {
 	height: 45px;
 	margin-top: 4px;
 	padding: 0px 5px;
+}
+
+.input_image {
+	position: absolute;
+	width: auto;
+	height: 23px;
+	margin-top: 3px;
+	cursor: pointer;
+}
+
+.smile {
+	right: 128px;
+}
+
+.upload {
+	right: 95px;
 }

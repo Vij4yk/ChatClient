@@ -50,6 +50,22 @@ $(document).ready(function() {
 		event.preventDefault();
 		sendMessage();	
 	}); 
+
+	$('#smile').hover(function()
+	{
+		$(this).attr('src','images/smile_hover.png');
+	},
+	function(){
+      $(this).attr('src','images/smile.png')
+    });
+
+    $('#camera').hover(function()
+	{
+		$(this).attr('src','images/camera_hover.png');
+	},
+	function(){
+      $(this).attr('src','images/camera.png')
+    });
 });
 
 function parseURL(query)
@@ -88,7 +104,7 @@ function sendMessage()
 function makeMessageSelf(message)
 {
 	var html = '<div class="message">';
-	html += '<img class="avatar_self" src="avatar1.png"  alt="' + username + '">';
+	html += '<img class="avatar_self" src="images/avatar1.png"  alt="' + username + '">';
 	html = html + '<div class="from_user_self">' + username + '</div>';
 	html = html + '<div class="from_message_self">' + message + '</div>';
 	html += "</div>";
@@ -99,7 +115,7 @@ function makeMessageFrom(user, message)
 {
 	var pic_num = users[user];
 	var html = '<div class="message">';
-	html += '<img class="avatar" src="avatar2.png"  alt="' + user + '">';
+	html += '<img class="avatar" src="images/avatar2.png"  alt="' + user + '">';
 	html = html + '<div class="from_user">' + user + '</div>';
 	html = html + '<div class="from_message">' + message + '</div>';
 	html += '</div>';
