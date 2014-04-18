@@ -3,22 +3,11 @@
   <head>
   	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <title> Chat Client </title>
-    <link rel="stylesheet" type="text/css" href="main.css">
+    <link rel="stylesheet" type="text/css" href="main-private.css">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  	<script type="text/javascript" src="client.js"></script>
+  	<script type="text/javascript" src="client-private.js"></script>
   </head>
   <body>
-	<div class="login" id="login">
-		<form id="loginform" action="">
-			<p class="error" id="error">Username is invalid</p>
-			<p>Please enter username:</p>
-				<div>
-					<input class="box" id="username" type="text" name="username">
-					<input class="button" type="submit" name="submit" value="Login">
-				</div>
-		</form>
-	</div>
-
 	<div class="page" id="chat">
 		<div class="navbar">
 	    	<ul>
@@ -30,16 +19,6 @@
 	    </div>
 
 		<div class="container">
-			<div class="users">
-				<div class="user_header">Online Users
-					<div class="sub_header">Click one below</div>
-				</div>
-				<div class="person">
-					<ul id="users">
-						<li>No users online</li>
-					</ul>
-				</div>
-	   		</div>
 	   		<div class="chatting">
 	   			<div class="window" id="messages">
 	   			</div>

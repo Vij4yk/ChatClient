@@ -11,7 +11,7 @@ var socket = new WebSocket(url);
 
 socket.onopen = function()
 {
-	alert("OPEN");
+	// nothing to do here
 }
 
 socket.onmessage = function(msg)
@@ -58,11 +58,7 @@ socket.onmessage = function(msg)
 
 socket.onclose = function()
 {
-	if(username in users)
-	{
-		alert("Removing " + username);
-		delete [username];
-	}
+	// nothing to do here
 }
 
 socket.onerror = function(msg)
@@ -105,7 +101,6 @@ function login()
 function logout()
 {
 	clearInterval(window.ID);
-	socket.close();
 	
 	$('#error').hide();
 	$('#chat').fadeOut(400, function()
@@ -113,7 +108,6 @@ function logout()
 		$('#login').fadeIn(400);
 		$('#input').val('');
 		$('#username').focus();
-		socket = new WebSocket(url);
 		// remove user on web socket server
 	});
 }
@@ -139,7 +133,7 @@ function sendMessage()
 
 function makeMessageSelf(message)
 {
-	var html = '<div class="message" onclick="openWindow(\'' + username + '\')">';
+	var html = '<div class="message">';
 	html += '<img class="avatar_self" src="avatar1.png"  alt="' + username + '">';
 	html = html + '<div class="from_user_self">' + username + '</div>';
 	html = html + '<div class="from_message_self">' + message + '</div>';
@@ -187,9 +181,16 @@ function executeUpdate(names)
 			counter++;
 		}
 		var item = '<li><img class="small_avatar" src="avatar' + users[name] + '.png">' + name + '</li>';
-		$('#users').append($(item).click(function() {
-			openWindow(name);
-		}));
+		if(name != username)
+		{
+			$('#users').append($(item).click(function() {
+				openWindow(name);
+			}));
+		}
+		else
+		{
+			$('#users').append(item);
+		}
 	});
 }
 
@@ -201,7 +202,8 @@ function openWindow(user)
 	}
 	if( typeof openWindow.winRefs[user] == 'undefined' || openWindow.winRefs[user].closed )
 	{
-		openWindow.winRefs[user] = window.open('client.html', user);
+		var url = 'client-private.html' + '?username="' + username + '&touser=' + user;
+		openWindow.winRefs[user] = window.open(url, user);
 		openWindow.winRefs[user].moveTo(0,0);
 	} 
 	else 
