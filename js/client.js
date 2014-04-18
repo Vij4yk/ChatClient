@@ -49,6 +49,18 @@ socket.onmessage = function(msg)
 			$('#messages').append(makeMessageSelf(message));
 		else
 			$('#messages').append(makeMessageFrom(from_user, message));
+
+
+		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+	}
+	else if(whole_message.substring(0,7) == "PRIVATE")
+	{
+		alert(whole_message);
+		var parts = whole_message.split('\n');
+		var from_user = parts[0].split(" ")[2];
+		var starting = 14 + from_user.length;
+		var message = parts[1];
+		sendToChild(from_user, message);
 	}
 	else
 	{
@@ -142,7 +154,6 @@ function sendMessage()
 
 			input.val('');
 			input.focus();
-			$('#messages').scrollTop($('#messages')[0].scrollHeight);
 		}
 	}
 }
@@ -210,16 +221,28 @@ function executeUpdate(names)
 	});
 }
 
-function openWindow(user)
+function commandFromChild(command)
 {
-	if( typeof openWindow.winRefs == 'undefined' )
+	socket.send(command);
+}
+
+function sendToChild(user, message)
+{
+	alert("Looking for " + user + " with message " + message);
+	openWindow(user);
+	//userWindow.receiveFromParent(user, message);
+}
+
+function openWindow(user, find)
+{
+	if(typeof openWindow.winRefs == 'undefined')
 	{
 		openWindow.winRefs = new Array();
 	}
-	if( typeof openWindow.winRefs[user] == 'undefined' || openWindow.winRefs[user].closed )
+	if(typeof openWindow.winRefs[user] == 'undefined' || openWindow.winRefs[user].closed)
 	{
-		var url = 'client-private.html' + '?username="' + username + '&touser=' + user;
-		openWindow.winRefs[user] = window.open(url, user);
+		var url = 'client-private.html' + '?username=' + username + '&touser=' + user;
+		openWindow.winRefs[user] = window.open(url, user, "width=800, height=750");
 		openWindow.winRefs[user].moveTo(0,0);
 	} 
 	else 

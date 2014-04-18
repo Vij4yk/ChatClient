@@ -1,25 +1,6 @@
 var username = "";
 var to_user = "";
 
-// Change this function
-/*
-socket.onmessage = function(msg)
-{
-	var whole_message = msg.data.toString().trim();
-	if(whole_message.substring(0,7) == "PRIVATE")
-	{
-		// Change this code
-		var parts = whole_message.split(" ", 3);
-		var from_user = parts[2];
-		var starting = 16 + from_user.length;
-		var message = whole_message.substring(starting);
-		if(from_user == username)
-			$('#messages').append(makeMessageSelf(message));
-		else
-			$('#messages').append(makeMessageFrom(from_user, message));
-	}
-}
-*/
 $(document).ready(function() {
 	parseURL(location.search);
 
@@ -52,13 +33,12 @@ $(document).ready(function() {
 function parseURL(query)
 {
 	args = query.split("&");
-	username = args[0].split("=")[1].substring(3);
+	username = args[0].split("=")[1];
 	to_user = args[1].split("=")[1];
 }
 
 function logout()
 {
-	socket.close();
 	window.close();
 }
 
@@ -72,13 +52,19 @@ function sendMessage()
 			alert("Message length must be less than 99");
 		else
 		{
-			socket.send("SEND " + message);
-
+			var command = "SEND " + to_user + '\n' + message;
+			alert(command);
+			window.opener.commandFromChild(command);
 			input.val('');
 			input.focus();
 			$('#messages').scrollTop($('#messages')[0].scrollHeight);
 		}
 	}
+}
+
+function receiveFromParent(user, message)
+{
+	alert(message);
 }
 
 function makeMessageSelf(message)
