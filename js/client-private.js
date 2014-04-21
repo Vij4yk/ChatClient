@@ -5,7 +5,8 @@ $(document).ready(function() {
 	parseURL(location.search);
 
 	$('#name').text("Welcome, " + username);
-	$('input').attr("placeholder", "Press 'Enter' or click 'SEND' to send " + to_user + " a message");
+	$('#input').attr("placeholder", "Press 'Enter' or click 'SEND' to send " + to_user + " a message");
+	$('#input').focus();
 
 	$('#sendform').submit(function(event)
 	{
@@ -53,10 +54,10 @@ function sendMessage()
 		else
 		{
 			var command = "SEND " + to_user + '\n' + message;
-			alert(command);
 			window.opener.commandFromChild(command);
 			input.val('');
 			input.focus();
+			$('#messages').append(makeMessageSelf(message));
 			$('#messages').scrollTop($('#messages')[0].scrollHeight);
 		}
 	}
@@ -64,7 +65,7 @@ function sendMessage()
 
 function receiveFromParent(user, message)
 {
-	alert(message);
+	$('#messages').append(makeMessageFrom(user, message));
 }
 
 function makeMessageSelf(message)
@@ -79,7 +80,6 @@ function makeMessageSelf(message)
 
 function makeMessageFrom(user, message)
 {
-	var pic_num = users[user];
 	var html = '<div class="message">';
 	html += '<img class="avatar" src="images/avatar2.png"  alt="' + user + '">';
 	html = html + '<div class="from_user">' + user + '</div>';

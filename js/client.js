@@ -7,76 +7,6 @@ var username = "";
 var signin = true;
 
 var url = "ws://localhost:8787/chat";
-var socket = new WebSocket(url);
-
-socket.onopen = function()
-{
-	// nothing to do here
-}
-
-socket.onmessage = function(msg)
-{
-	var whole_message = msg.data.toString().trim();
-	if(signin)
-	{
-		if(whole_message == "ERROR")
-		{
-			$('#error').fadeIn(400);
-			$('#username').focus();
-		}
-		else
-		{
-			users[username] = 1;
-			signin = false;
-			$('#login').fadeOut(400, function()
-			{
-				$('#chat').fadeIn(400);
-				$('#name').text("Welcome, " + username);
-				$('#input').focus();
-
-				update();
-				window.ID = window.setInterval(function(){update();}, 2000);
-			});
-		}
-	}
-	else if(whole_message.substring(0,9) == "BROADCAST")
-	{
-		var parts = whole_message.split(" ", 3);
-		var from_user = parts[2];
-		var starting = 16 + from_user.length;
-		var message = whole_message.substring(starting);
-		if(from_user == username)
-			$('#messages').append(makeMessageSelf(message));
-		else
-			$('#messages').append(makeMessageFrom(from_user, message));
-
-
-		$('#messages').scrollTop($('#messages')[0].scrollHeight);
-	}
-	else if(whole_message.substring(0,7) == "PRIVATE")
-	{
-		alert(whole_message);
-		var parts = whole_message.split('\n');
-		var from_user = parts[0].split(" ")[2];
-		var starting = 14 + from_user.length;
-		var message = parts[1];
-		sendToChild(from_user, message);
-	}
-	else
-	{
-		executeUpdate(whole_message);
-	}
-}
-
-socket.onclose = function()
-{
-	// nothing to do here
-}
-
-socket.onerror = function(msg)
-{
-	alert(msg);
-}
 
 $(document).ready(function() {
 	$('#username').focus();
@@ -110,6 +40,79 @@ $(document).ready(function() {
     });
 });
 
+function makeConnections()
+{
+	window.socket = new WebSocket(url);
+	window.socket.onopen = function()
+	{
+		window.socket.send("ME IS " + username);
+	}
+
+	window.socket.onmessage = function(msg)
+	{
+		var whole_message = msg.data.toString().trim();
+		if(signin)
+		{
+			if(whole_message == "ERROR")
+			{
+				$('#error').fadeIn(400);
+				$('#username').focus();
+				window.socket.close()
+			}
+			else
+			{
+				users[username] = 1;
+				signin = false;
+				$('#login').fadeOut(400, function()
+				{
+					$('#chat').fadeIn(400);
+					$('#name').text("Welcome, " + username);
+					$('#input').focus();
+
+					update();
+					window.ID = window.setInterval(function(){update();}, 2000);
+				});
+			}
+		}
+		else if(whole_message.substring(0,9) == "BROADCAST")
+		{
+			var parts = whole_message.split(" ", 3);
+			var from_user = parts[2];
+			var starting = 16 + from_user.length;
+			var message = whole_message.substring(starting);
+			if(from_user == username)
+				$('#messages').append(makeMessageSelf(message));
+			else
+				$('#messages').append(makeMessageFrom(from_user, message));
+
+
+			$('#messages').scrollTop($('#messages')[0].scrollHeight);
+		}
+		else if(whole_message.substring(0,7) == "PRIVATE")
+		{
+			var parts = whole_message.split('\n');
+			var from_user = parts[0].split(" ")[2];
+			var starting = 14 + from_user.length;
+			var message = parts[1];
+			sendToChild(from_user, message);
+		}
+		else
+		{
+			executeUpdate(whole_message);
+		}
+	}
+
+	window.socket.onclose = function()
+	{
+		// nothing to do here
+	}
+
+	window.socket.onerror = function(msg)
+	{
+		alert(msg);
+	}
+}
+
 function login()
 {
 	var name = $('#username').val();
@@ -121,8 +124,8 @@ function login()
 	else
 	{
 		username = name;
+		makeConnections();
 		$('#username').val('');
-		socket.send("ME IS " + name);
 	}
 }
 
@@ -136,7 +139,9 @@ function logout()
 		$('#login').fadeIn(400);
 		$('#input').val('');
 		$('#username').focus();
-		// remove user on web socket server
+		signin = true;
+		$('#messages').empty();
+		window.socket.close();
 	});
 }
 
@@ -150,7 +155,7 @@ function sendMessage()
 			alert("Message length must be less than 99");
 		else
 		{
-			socket.send("BROADCAST " + message);
+			window.socket.send("BROADCAST " + message);
 
 			input.val('');
 			input.focus();
@@ -193,7 +198,7 @@ function chunkMessage(message)
 
 function update()
 {
-	socket.send("WHO HERE");
+	window.socket.send("WHO HERE");
 }
 
 function executeUpdate(names)
@@ -223,30 +228,49 @@ function executeUpdate(names)
 
 function commandFromChild(command)
 {
-	socket.send(command);
+	window.socket.send(command);
 }
 
 function sendToChild(user, message)
 {
-	alert("Looking for " + user + " with message " + message);
-	openWindow(user);
-	//userWindow.receiveFromParent(user, message);
+	var w = openWindow(user, true);
+	var win = w[0];
+	if(w[1] == false)
+	{
+		$(win).load(function() {
+			win.receiveFromParent(user, message);
+		});
+	}
+	else
+	{
+		win.receiveFromParent(user, message);
+	}
 }
 
 function openWindow(user, find)
 {
+	if(typeof find == 'undefined')
+	{
+		find = false;
+	}
+
 	if(typeof openWindow.winRefs == 'undefined')
 	{
 		openWindow.winRefs = new Array();
 	}
+
 	if(typeof openWindow.winRefs[user] == 'undefined' || openWindow.winRefs[user].closed)
 	{
 		var url = 'client-private.html' + '?username=' + username + '&touser=' + user;
 		openWindow.winRefs[user] = window.open(url, user, "width=800, height=750");
 		openWindow.winRefs[user].moveTo(0,0);
+		if(find)
+			return [openWindow.winRefs[user], false];
 	} 
 	else 
 	{
 		window.open('', user).focus();
+		if(find)
+			return [openWindow.winRefs[user], true];
 	}
 }
