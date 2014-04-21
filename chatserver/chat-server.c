@@ -1,5 +1,68 @@
 /* chat-server.c */
 
+
+/** VERSION 2 for compatibility with Spring 2014 Project #4
+ **
+ **  IMPLEMENTED APPLICATION-LEVEL PROTOCOL:
+ **
+ **    ME IS <username>
+ **    -- this returns "OK\n" or, if duplicate user, "ERROR\n"
+ **
+ **
+ **    WHO HERE <from-user>\n
+ **      --or--
+ **    WHO HERE
+ **    -- this returns "<user1>,<user2>,<user3>,...,<user-n>\n"
+ **
+ **
+ **    SEND <from-user> <target-user>\n
+ **      --or--
+ **    SEND <target-user>\n
+ **    -- upon receiving this message type, the server sends
+ **       the following:
+ **
+ **         PRIVATE FROM <from-user>\n
+ **         <message-content>
+ **
+ **
+ **    BROADCAST <from-user>\n
+ **      --or--
+ **    BROADCAST\n
+ **    -- upon receiving this message type, the server sends
+ **       the following:
+ **
+ **         BROADCAST FROM <from-user>\n
+ **         <message-content>
+ **
+ **
+ **    LOGOUT <from-user>\n
+ **      --or--
+ **    LOGOUT\n
+ **    -- this does not return anything to the client
+ **
+ **
+ **  Notes:
+ **
+ **  (1) Because we're using TCP (and not supporting UDP), 
+ **      we do not need to have the <from-user> field in
+ **      the above commands; therefore, it is optional.
+ **
+ **  (2) For the above commands, note that single space
+ **      characters are all that are supported for delimiters
+ **      (as opposed to arbitrary amounts of whitespace).
+ **
+ **  (3) The extended payload features of the WebSocket
+ **      protocol are not implemented, and some commands
+ **      will silently fail if the maximum length of 126
+ **      is exceeded.
+ **
+ **  (4) We have omitted the need for specifying length
+ **      within the application-level protocol, because
+ **      the WebSocket protocol handles this.
+ **
+ **/
+
+
 /* COMPILE sha1-c by doing this:
  *
  *   bash$ cd sha1-c
@@ -57,7 +120,7 @@ int hex_to_digit( char h ) { return ( h > '9' ? h - 'A' + 10 : h - '0' ); }
 
 void trim_right( char * s )
 {
-  while ( strlen( s ) > 0 && s[ strlen( s ) - 1 ] == newline )
+  while ( strlen( s ) > 0 && ( s[ strlen( s ) - 1 ] == newline || s[ strlen( s ) - 1 ] == ' ' ) )
   {
     s[ strlen( s ) - 1 ] = '\0';
   }
@@ -162,7 +225,7 @@ int main()
 #endif
 
     FD_ZERO( &readfds );
-    FD_SET( sock, &readfds );  /* <==== incoming new client connections */
+    FD_SET( sock, &readfds );  /* <== incoming new client connections */
     printf( "Set FD_SET to include listener fd %d\n", sock );
 
     for ( q = 0 ; q < chatuser_next_index ; q++ )
@@ -523,7 +586,8 @@ int main()
 
 /* payload is "ME IS <username>\n" etc. */
 /* response has first byte set (FIN and OPCODE) */
-/* returns whether to close connection (1) or not (0) */
+/* returns whether to do nothing (0), close connection (1),
+   broadcast (2), or send a private message (>2) */
 int process_cmd( int chatuser_index,
                  char * payload,
                  int payload_length,
@@ -549,7 +613,7 @@ int process_cmd( int chatuser_index,
     }
     else
     {
-      printf( "Duplicate user: [%s]\n", payload + 5 );
+      printf( "Duplicate user: [%s]\n", payload + 6 );
 
       response[1] = 0x06; /* MASK of 0 and LENGTH of 6 */
       response[2] = 'E';
@@ -590,12 +654,29 @@ int process_cmd( int chatuser_index,
   }
   else if ( strncmp( payload, "SEND ", 5 ) == 0 )
   {
+    trim_right( payload );
+
     char username[1024];
-    int i;
+    int i, j;
     for ( i = 5 ; i < payload_length && payload[i] != newline ; i++ )
     {
       username[i-5] = payload[i];
       username[i-4] = '\0';
+    }
+
+    int orig_username_length = strlen( username );
+
+    /* this code will omit the optional <from-user>, if present */
+    for ( i = strlen( username ) - 1 ; i >= 0 ; i-- )
+    {
+      if ( username[i] == ' ' )
+      {
+        for ( i++, j = 0 ; i <= strlen( username ) ; i++, j++ )
+        {
+          username[j] = username[i];
+        }
+        break;
+      }
     }
 
     int index = find_chatuser( username );
@@ -619,7 +700,7 @@ int process_cmd( int chatuser_index,
       printf( "Found user on fd %d\n", chatusers[ index ].fd );
       strcpy( response + 2, "PRIVATE FROM " );
       strcpy( response + 15, chatusers[ chatuser_index ].username );
-      strcat( response + 15, payload + 5 + strlen( username ) );
+      strcat( response + 15, payload + 5 + orig_username_length );
       *response_length = strlen( response + 2 ) + 2;
       response[1] = strlen( response + 2 );
       return chatusers[ index ].fd;
@@ -633,6 +714,10 @@ int process_cmd( int chatuser_index,
     *response_length = strlen( response + 2 ) + 2;
     response[1] = strlen( response + 2 );
     return 2;
+  }
+  else if ( strncmp( payload, "LOGOUT", 6 ) == 0 )
+  {
+    return 1;
   }
 
   return 0;
