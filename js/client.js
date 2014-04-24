@@ -38,7 +38,17 @@ $(document).ready(function() {
 	function(){
       $(this).attr('src','images/camera.png')
     });
+
+    $('#camera').click(function()
+    {
+    	$('#upload').click();
+    });
 });
+
+function handleFiles(file)
+{
+	alert($('#upload').val());
+}
 
 function makeConnections()
 {
