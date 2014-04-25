@@ -43,6 +43,16 @@ $(document).ready(function() {
     {
     	$('#upload').click();
     });
+
+    $('#smile').click(function()
+    {
+    	$('#popover').fadeToggle(200);
+    });
+
+    $('.emoticon').click(function()
+    {
+    	sendEmoticon($(this).attr('src').split("/")[2]);
+    });
 });
 
 function handleFiles(file)
@@ -119,7 +129,7 @@ function makeConnections()
 
 	window.socket.onerror = function(msg)
 	{
-		alert(msg);
+		alert(msg.toString());
 	}
 }
 
@@ -173,12 +183,24 @@ function sendMessage()
 	}
 }
 
+function sendEmoticon(url)
+{
+	window.socket.send("BROADCAST emoticon:" + url);
+	$('#smile').click();
+}
+
 function makeMessageSelf(message)
 {
 	var html = '<div class="message">';
 	html += '<img class="avatar_self" src="images/avatar1.png"  alt="' + username + '">';
 	html = html + '<div class="from_user_self">' + username + '</div>';
-	html = html + '<div class="from_message_self">' + message + '</div>';
+	if(message.substring(0,9) == "emoticon:")
+	{
+		var image = message.substring(9);
+		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_self_message">';
+	}
+	else
+		html = html + '<div class="from_message_self">' + message + '</div>';
 	html += "</div>";
 	return html;
 }
@@ -189,7 +211,13 @@ function makeMessageFrom(user, message)
 	var html = '<div class="message" onclick="openWindow(\'' + user + '\')">';
 	html += '<img class="avatar" src="images/avatar' + pic_num + '.png"  alt="' + user + '">';
 	html = html + '<div class="from_user">' + user + '</div>';
-	html = html + '<div class="from_message">' + message + '</div>';
+	if(message.substring(0,9) == "emoticon:")
+	{
+		var image = message.substring(9);
+		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_message">';
+	}
+	else
+		html = html + '<div class="from_message">' + message + '</div>';
 	html += '</div>';
 	return html;
 }

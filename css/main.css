@@ -332,6 +332,72 @@ ul {
 	right: 95px;
 }
 
+.popover {
+	position: absolute;
+	display: none;
+	padding: 2px;
+	width: 200px;
+	height: 200px;
+	left: 435px;
+	top: 330px;
+	background: #DDDDDD;
+	border-radius: 4px;
+	box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;;
+	-webkit-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;
+	-khtml-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;;
+}
+
+.arrow-down {
+	position: absolute;
+	top: 94%;
+	left: 40.5%;
+	font-size: 38px;
+	color: #DDDDDD;
+	text-shadow: 0 4px 4px rgba(0,0,0,0.4);
+}
+
+.arrow-down::before {
+	content: "\25BC";
+}
+
+.images {
+	height: 100%;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.emoticon {
+	width: 50px;
+	height: 50px;
+	padding: 4px;
+	margin: 3px;
+}
+
+.emoticon:hover {
+	cursor: pointer;
+	background-color: rgba(160,160,160, 0.5);
+	border-radius: 5px;
+}
+
+.emoticon_message {
+	clear: both;
+	float:left;
+	height: 50px;
+	padding-left: 35px;
+	margin-top: -15px;
+	margin-bottom: -5px;
+}
+
+.emoticon_self_message {
+	clear: both;
+	float:right;
+	height: 50px;
+	padding-right: 35px;
+	margin-top: -15px;
+	margin-bottom: -5px;
+}
+
 #upload {
 	visibility: hidden;
 	width: 0;
