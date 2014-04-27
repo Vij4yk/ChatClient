@@ -52,6 +52,7 @@ $(document).ready(function() {
     $('.emoticon').click(function()
     {
     	sendEmoticon($(this).attr('src').split("/")[2]);
+    	$('#input').focus();
     });
 });
 
