@@ -1,11 +1,11 @@
 /* chat-server.c */
 
 
-/** VERSION 2 for compatibility with Spring 2014 Project #4
+/** VERSION 3 for compatibility with Spring 2014 Project #4
  **
  **  IMPLEMENTED APPLICATION-LEVEL PROTOCOL:
  **
- **    ME IS <username>
+ **    ME IS <username>\n
  **    -- this returns "OK\n" or, if duplicate user, "ERROR\n"
  **
  **
@@ -108,7 +108,7 @@
 #define WS_STATUS_CLOSED 4
 
 /* change this to a '|' character for testing the SEND command */
-char newline = '\n';
+char newline = '|';
 
 
 extern int errno;
@@ -642,6 +642,7 @@ int process_cmd( int chatuser_index,
     allusers[ strlen( allusers ) ] = newline;
     allusers[ strlen( allusers ) ] = '\0';
 
+    /* TO DO: add support in server for extended payload */
     if ( strlen( allusers ) > 125 )
     {
       printf( "Whoops! Long frame not supported. Skipping.\n" );
@@ -652,16 +653,18 @@ int process_cmd( int chatuser_index,
     strcpy( response + 2, allusers );
     *response_length = strlen( allusers ) + 2;
   }
-  else if ( strncmp( payload, "SEND ", 5 ) == 0 )
+  else if ( strncmp( payload, "SEND ", 5 ) == 0 || strncmp( payload, "BROADCAST", 9 ) == 0 )
   {
+    int bc = strncmp( payload, "SEND ", 5 );
+
     trim_right( payload );
 
     char username[1024];
-    int i, j;
-    for ( i = 5 ; i < payload_length && payload[i] != newline ; i++ )
+    int i, j, k = (bc?9:5);
+    for ( i = k ; i < payload_length && payload[i] != newline ; i++ )
     {
-      username[i-5] = payload[i];
-      username[i-4] = '\0';
+      username[i-k] = payload[i];
+      username[i-(k-1)] = '\0';
     }
 
     int orig_username_length = strlen( username );
@@ -679,41 +682,44 @@ int process_cmd( int chatuser_index,
       }
     }
 
-    int index = find_chatuser( username );
-
-    if ( index == -1 )
+    if ( bc )
     {
-      printf( "Unknown user: [%s]\n", username );
-
-      response[1] = 0x06; /* MASK of 0 and LENGTH of 6 */
-      response[2] = 'E';
-      response[3] = 'R';
-      response[4] = 'R';
-      response[5] = 'O';
-      response[6] = 'R';
-      response[7] = newline;
-      response[8] = '\0';
-      *response_length = 8;
+      strcpy( response + 2, "BROADCAST FROM " );
+      strcpy( response + 17, chatusers[ chatuser_index ].username );
+      strcat( response + 17, payload + 9 + orig_username_length );
+      *response_length = strlen( response + 2 ) + 2;
+      response[1] = strlen( response + 2 );
+      return 2;
     }
     else
     {
-      printf( "Found user on fd %d\n", chatusers[ index ].fd );
-      strcpy( response + 2, "PRIVATE FROM " );
-      strcpy( response + 15, chatusers[ chatuser_index ].username );
-      strcat( response + 15, payload + 5 + orig_username_length );
-      *response_length = strlen( response + 2 ) + 2;
-      response[1] = strlen( response + 2 );
-      return chatusers[ index ].fd;
+      int index = find_chatuser( username );
+
+      if ( index == -1 )
+      {
+        printf( "Unknown user: [%s]\n", username );
+
+        response[1] = 0x06; /* MASK of 0 and LENGTH of 6 */
+        response[2] = 'E';
+        response[3] = 'R';
+        response[4] = 'R';
+        response[5] = 'O';
+        response[6] = 'R';
+        response[7] = newline;
+        response[8] = '\0';
+        *response_length = 8;
+      }
+      else
+      {
+        printf( "Found user on fd %d\n", chatusers[ index ].fd );
+        strcpy( response + 2, "PRIVATE FROM " );
+        strcpy( response + 15, chatusers[ chatuser_index ].username );
+        strcat( response + 15, payload + 5 + orig_username_length );
+        *response_length = strlen( response + 2 ) + 2;
+        response[1] = strlen( response + 2 );
+        return chatusers[ index ].fd;
+      }
     }
-  }
-  else if ( strncmp( payload, "BROADCAST", 9 ) == 0 )
-  {
-    strcpy( response + 2, "BROADCAST FROM " );
-    strcpy( response + 17, chatusers[ chatuser_index ].username );
-    strcat( response + 17, payload + 9 );
-    *response_length = strlen( response + 2 ) + 2;
-    response[1] = strlen( response + 2 );
-    return 2;
   }
   else if ( strncmp( payload, "LOGOUT", 6 ) == 0 )
   {

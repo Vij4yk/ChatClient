@@ -66,14 +66,15 @@ function makeConnections()
 	window.socket = new WebSocket(url);
 	window.socket.onopen = function()
 	{
-		window.socket.send("ME IS " + username);
+		window.socket.send("ME IS " + username + "|");
 	}
 
 	window.socket.onmessage = function(msg)
 	{
-		var whole_message = msg.data.toString().trim();
+		var whole_message = msg.data.toString();
 		if(signin)
 		{
+			whole_message = whole_message.split("|")[0];
 			if(whole_message == "ERROR")
 			{
 				$('#error').fadeIn(400);
@@ -97,10 +98,10 @@ function makeConnections()
 		}
 		else if(whole_message.substring(0,9) == "BROADCAST")
 		{
-			var parts = whole_message.split(" ", 3);
-			var from_user = parts[2];
-			var starting = 16 + from_user.length;
-			var message = whole_message.substring(starting);
+			var parts = whole_message.split("|");
+			var from_user = parts[0].split(" ")[2];
+			var message = parts[1];
+
 			if(from_user == username)
 				$('#messages').append(makeMessageSelf(message));
 			else
@@ -111,7 +112,7 @@ function makeConnections()
 		}
 		else if(whole_message.substring(0,7) == "PRIVATE")
 		{
-			var parts = whole_message.split('\n');
+			var parts = whole_message.split("|");
 			var from_user = parts[0].split(" ")[2];
 			var starting = 14 + from_user.length;
 			var message = parts[1];
@@ -119,6 +120,7 @@ function makeConnections()
 		}
 		else
 		{
+			whole_message = whole_message.split("|")[0];
 			executeUpdate(whole_message);
 		}
 	}
@@ -176,7 +178,7 @@ function sendMessage()
 			alert("Message length must be less than 99");
 		else
 		{
-			window.socket.send("BROADCAST " + message);
+			window.socket.send("BROADCAST|" + message);
 
 			input.val('');
 			input.focus();
@@ -186,7 +188,7 @@ function sendMessage()
 
 function sendEmoticon(url)
 {
-	window.socket.send("BROADCAST emoticon:" + url);
+	window.socket.send("BROADCAST|emoticon:" + url);
 	$('#smile').click();
 }
 
@@ -242,7 +244,7 @@ function update()
 
 function executeUpdate(names)
 {
-	var returned = names.trim().split(",");
+	var returned = (names.split("|")[0]).split(",");
 	var counter = 2;
 	$('#users').empty();
 	$.each(returned, function(i, name) {

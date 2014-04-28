@@ -74,7 +74,7 @@ function sendMessage()
 			alert("Message length must be less than 99");
 		else
 		{
-			var command = "SEND " + to_user + '\n' + message;
+			var command = "SEND " + to_user + "|" + message;
 			window.opener.commandFromChild(command);
 			input.val('');
 			input.focus();
@@ -86,7 +86,7 @@ function sendMessage()
 
 function sendEmoticon(url)
 {
-	window.opener.commandFromChild("SEND " + to_user + '\n' + "emoticon:" + url);
+	window.opener.commandFromChild("SEND " + to_user + "|" + "emoticon:" + url);
 	$('#smile').click();
 	$('#messages').append(makeMessageSelf("emoticon:" + url));
 	$('#messages').scrollTop($('#messages')[0].scrollHeight);
