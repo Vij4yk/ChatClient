@@ -45,6 +45,12 @@ $(document).ready(function() {
     	sendEmoticon($(this).attr('src').split("/")[2]);
     	$('#input').focus();
     });
+
+    $('#upload').change(function(e)
+    {
+    	var file = e.target.files[0];
+    	sendImage(file);
+    });
 });
 
 function handleFiles(files)
@@ -92,6 +98,20 @@ function sendEmoticon(url)
 	$('#messages').scrollTop($('#messages')[0].scrollHeight);
 }
 
+function sendImage(file)
+{
+	var fr = new FileReader();
+	fr.onload = function(e)
+	{
+		var contents = event.target.result;
+		//console.log("File contents: " + contents);
+		window.opener.commandFromChild("SEND " + to_user + "|" + "upload:" + contents)
+		$('#messages').append(makeMessageSelf("upload:" + contents));
+		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+	};
+	fr.readAsDataURL(file);
+}
+
 function receiveFromParent(user, message)
 {
 	$('#messages').append(makeMessageFrom(user, message));
@@ -106,6 +126,11 @@ function makeMessageSelf(message)
 	{
 		var image = message.substring(9);
 		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_self_message">';
+	}
+	else if(message.substring(0,7) == "upload:")
+	{
+		var imageURI = message.substring(7);
+		html = html + '<img scr="' + imageURI + '" class="image_self_message">';
 	}
 	else
 		html = html + '<div class="from_message_self">' + message + '</div>';
@@ -122,6 +147,11 @@ function makeMessageFrom(user, message)
 	{
 		var image = message.substring(9);
 		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_message">';
+	}
+	else if(message.substring(0,7) == "upload:")
+	{
+		var imageURI = message.substring(7);
+		html = html + '<img scr="' + imageURI + '" class="image_message">';
 	}
 	else
 		html = html + '<div class="from_message">' + message + '</div>';

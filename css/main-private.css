@@ -236,9 +236,9 @@ html, body {
 	background: #DDDDDD;
 	border-radius: 4px;
 	box-shadow: 0 2px 4px rgba(0,0,0,0.5);
-	-moz-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;;
+	-moz-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;
 	-webkit-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;
-	-khtml-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;;
+	-khtml-box-shadow: rgba(0,0,0,0.5) 0 2px 4px;
 }
 
 .arrow-down {
@@ -286,6 +286,24 @@ html, body {
 	clear: both;
 	float:right;
 	height: 50px;
+	padding-right: 35px;
+	margin-top: -15px;
+	margin-bottom: -5px;
+}
+
+.image_message {
+	clear: both;
+	float:left;
+	height: 150px;
+	padding-left: 35px;
+	margin-top: -15px;
+	margin-bottom: -5px;
+}
+
+.image_self_message {
+	clear: both;
+	float:right;
+	height: 150px;
 	padding-right: 35px;
 	margin-top: -15px;
 	margin-bottom: -5px;

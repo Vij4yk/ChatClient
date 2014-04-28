@@ -54,12 +54,13 @@ $(document).ready(function() {
     	sendEmoticon($(this).attr('src').split("/")[2]);
     	$('#input').focus();
     });
-});
 
-function handleFiles(file)
-{
-	alert($('#upload').val());
-}
+    $('#upload').change(function(e)
+    {
+    	var file = e.target.files[0];
+    	sendImage(file);
+    });
+});
 
 function makeConnections()
 {
@@ -192,6 +193,18 @@ function sendEmoticon(url)
 	$('#smile').click();
 }
 
+function sendImage(file)
+{
+	var fr = new FileReader();
+	fr.onload = function(e)
+	{
+		var contents = event.target.result;
+		//console.log("File contents: " + contents);
+		window.socket.send("BROADCAST|upload:" + contents)
+	};
+	fr.readAsDataURL(file);
+}
+
 function makeMessageSelf(message)
 {
 	var html = '<div class="message">';
@@ -201,6 +214,11 @@ function makeMessageSelf(message)
 	{
 		var image = message.substring(9);
 		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_self_message">';
+	}
+	else if(message.substring(0,7) == "upload:")
+	{
+		var imageURI = message.substring(7);
+		html = html + '<img scr="' + imageURI + '" class="image_self_message">';
 	}
 	else
 		html = html + '<div class="from_message_self">' + message + '</div>';
@@ -218,6 +236,11 @@ function makeMessageFrom(user, message)
 	{
 		var image = message.substring(9);
 		html = html + '<img src="images/emoticons/' + image + '" class="emoticon_message">';
+	}
+	else if(message.substring(0,7) == "upload:")
+	{
+		var imageURI = message.substring(7);
+		html = html + '<img scr="' + imageURI + '" class="image_message">';
 	}
 	else
 		html = html + '<div class="from_message">' + message + '</div>';
