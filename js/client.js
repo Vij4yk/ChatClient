@@ -287,10 +287,8 @@ function executeUpdate(names)
 		{
 			$('#users').append(item);
 		}
-		if(counter == 16)
-		{
-			counter = 0;
-		}
+		if(counter == 17)
+			counter = 2;
 	});
 }
 
