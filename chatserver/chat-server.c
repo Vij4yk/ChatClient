@@ -660,6 +660,8 @@ int process_cmd( int chatuser_index,
     trim_right( payload );
 
     char username[1024];
+	username[0] = '\0';
+	
     int i, j, k = (bc?9:5);
     for ( i = k ; i < payload_length && payload[i] != newline ; i++ )
     {
