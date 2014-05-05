@@ -104,10 +104,13 @@ function sendImage(file)
 	fr.onload = function(e)
 	{
 		var contents = event.target.result;
-		//console.log("File contents: " + contents);
-		window.opener.commandFromChild("SEND " + to_user + "|" + "upload:" + contents)
-		$('#messages').append(makeMessageSelf("upload:" + contents));
-		$('#messages').scrollTop($('#messages')[0].scrollHeight);
+
+		// add these line of code to send it to the chat server
+		//window.opener.commandFromChild("SEND " + to_user + "|" + "upload:" + contents)
+		// $('#messages').append(makeMessageSelf("upload:" + contents));
+		// $('#messages').scrollTop($('#messages')[0].scrollHeight);
+
+		alert("Got image with length " + contents.length + ". Our chat server will not allow this to be sent due to length constraints.");
 	};
 	fr.readAsDataURL(file);
 }

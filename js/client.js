@@ -128,7 +128,8 @@ function makeConnections()
 
 	window.socket.onclose = function()
 	{
-		// nothing to do here
+		alert("No connection available");
+		logout();
 	}
 
 	window.socket.onerror = function(msg)
@@ -199,8 +200,10 @@ function sendImage(file)
 	fr.onload = function(e)
 	{
 		var contents = event.target.result;
-		//console.log("File contents: " + contents);
-		window.socket.send("BROADCAST|upload:" + contents)
+
+		// add this line of code to send it to the chat server
+		// window.socket.send("BROADCAST|upload:" + contents)
+		alert("Got image with length " + contents.length + ". Our chat server will not allow this to be sent due to length constraints.");
 	};
 	fr.readAsDataURL(file);
 }
@@ -250,7 +253,7 @@ function makeMessageFrom(user, message)
 
 function chunkMessage(message)
 {
-	if(message.length <= 99)
+	if(message.length <= 120)
 	{
 		return message;
 	}
