@@ -133,7 +133,7 @@ function makeConnections()
 
 	window.socket.onerror = function(msg)
 	{
-		alert(msg.toString());
+		alert("Could not connect");
 	}
 }
 
