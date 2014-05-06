@@ -9,6 +9,7 @@
   </head>
   <body>
 	<div class="page" id="chat">
+		<!-- Begin Navbar -->
 		<div class="navbar">
 	    	<ul>
 	    		<li>
@@ -16,22 +17,24 @@
 	    		</li>
 	    		<li class="name" id="name">Welcome, unknown user</li>
 	    	</ul>
+	    	<!-- End Navbar -->
 	    </div>
-
+		
 		<div class="container">
+			<!-- Begin Chat Window -->
 	   		<div class="chatting">
 	   			<div class="window" id="messages">
 	   			</div>
 	   			<div class="input_area">
 	   				<form id="sendform" action="">
 	   					<div>
-							<input type="text" class="box" id="input" placeholder="Press 'Enter' or click 'SEND' to send message">
+								<input type="text" class="box" id="input" placeholder="Press 'Enter' or click 'SEND' to send message">
 		   					<input type="button" class="button" name="submit" value="SEND" onclick="sendMessage()">
 		   					<img class="input_image smile" id="smile" src="images/smile.png" alt="smile">
 		   					<img class="input_image upload" id="camera" src="images/camera.png" alt="upload">
 		   					<input type="file" id="upload" accept="image/*">
 	   					</div>
-					</form>
+						</form>
 	   			</div>
 	   			<div id="popover" class="popover">
 	   				<div class="images">
@@ -54,6 +57,7 @@
 	   				<span class="arrow-down"> </span>
 	   			</div>
 	   		</div>
+	   		<!-- End Chat Window -->
 		</div>
     </div>
   </body>
