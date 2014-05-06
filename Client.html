@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  	<meta http-equiv="Content-type" content="text/html;charset=utf-8">
+    <meta http-equiv="Content-type" content="text/html;charset=utf-8">
     <title> Chat Client </title>
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-  	<script type="text/javascript" src="js/client.js"></script>
+    <script type="text/javascript" src="js/client.js"></script>
   </head>
   <body>
+  	<!-- Begin Login Form -->
 	<div class="login" id="login">
 		<form id="loginform" action="">
 			<p class="error" id="error">Username is invalid</p>
@@ -18,8 +19,11 @@
 				</div>
 		</form>
 	</div>
-
+	<!-- End Login Form -->
+	
+	
 	<div class="page" id="chat">
+		<!-- Begin Navbar -->
 		<div class="navbar">
 	    	<ul>
 	    		<li>
@@ -28,8 +32,10 @@
 	    		<li class="name" id="name">Welcome, unknown user</li>
 	    	</ul>
 	    </div>
-
+	    <!-- End Navbar -->
+		<!-- Begin Main Interface -->
 		<div class="container">
+		<!-- Begin Users list -->
 			<div class="users">
 				<div class="user_header">Online Users
 					<div class="sub_header">Click one below</div>
@@ -40,6 +46,9 @@
 					</ul>
 				</div>
 	   		</div>
+	   		<!-- End Users List -->
+	   		
+	   		<!-- Begin Chat Window -->
 	   		<div class="chatting">
 	   			<div class="window" id="messages">
 	   			</div>
@@ -75,7 +84,9 @@
 	   				<span class="arrow-down"> </span>
 	   			</div>
 	   		</div>
+	   		<!-- End Chat Window -->
 		</div>
+		<!-- End Main Interface -->
     </div>
   </body>
 </html>
