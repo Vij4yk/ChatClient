@@ -81,7 +81,7 @@ function makeConnections()
 	// Attempt to login
 	window.socket.onopen = function()
 	{
-		window.socket.send("ME IS " + username + "|");
+		window.socket.send("ME IS " + username + '\n');
 	}
 
 	// Message recv handler
@@ -92,7 +92,7 @@ function makeConnections()
 		// If the user needs to be signed in still, parse ME IS response
 		if(signin)
 		{
-			whole_message = whole_message.split("|")[0];
+			whole_message = whole_message.split('\n')[0];
 
 			// Login error
 			if(whole_message == "ERROR")
@@ -125,7 +125,7 @@ function makeConnections()
 		// Receive a broadcast
 		else if(whole_message.substring(0,9) == "BROADCAST")
 		{
-			var parts = whole_message.split("|");
+			var parts = whole_message.split('\n');
 			var from_user = parts[0].split(" ")[2];
 			var message = parts[1];
 
@@ -143,7 +143,7 @@ function makeConnections()
 		// Rceive a private message
 		else if(whole_message.substring(0,7) == "PRIVATE")
 		{
-			var parts = whole_message.split("|");
+			var parts = whole_message.split('\n');
 			var from_user = parts[0].split(" ")[2];
 			var starting = 14 + from_user.length;
 			var message = parts[1];
@@ -155,15 +155,18 @@ function makeConnections()
 		// Receive a list of users
 		else
 		{
-			whole_message = whole_message.split("|")[0];
+			whole_message = whole_message.split('\n')[0];
 			executeUpdate(whole_message);
 		}
 	}
 
 	window.socket.onclose = function()
 	{
-		alert("No connection available");
-		logout();
+		if(!signin)
+		{
+			alert("No connection available");
+			logout();
+		}
 	}
 
 	window.socket.onerror = function(msg)
@@ -223,13 +226,13 @@ function sendMessage()
 	if(input.val() != "" || input.val() == 'undefined')
 	{
 		// Check for valid length
-		var message = chunkMessage(input.val());
-		if(message == false)
+		var message = input.val();
+		if(message.length > 100)
 			alert("Message length must be less than 99");
 		else
 		{
 			// Send the message
-			window.socket.send("BROADCAST|" + message);
+			window.socket.send("BROADCAST\n" + message);
 
 			input.val('');
 			input.focus();
@@ -240,7 +243,7 @@ function sendMessage()
 // Send emoticon
 function sendEmoticon(url)
 {
-	window.socket.send("BROADCAST|emoticon:" + url);
+	window.socket.send("BROADCAST\nemoticon:" + url);
 	$('#smile').click();
 }
 
@@ -253,7 +256,7 @@ function sendImage(file)
 		var contents = event.target.result;
 
 		// add this line of code to send it to the chat server
-		// window.socket.send("BROADCAST|upload:" + contents)
+		// window.socket.send("BROADCAST\nupload:" + contents)
 		alert("Got image with length " + contents.length + ". Our chat server will not allow this to be sent due to length constraints.");
 	};
 	fr.readAsDataURL(file);
@@ -316,18 +319,6 @@ function makeMessageFrom(user, message)
 	return html;
 }
 
-function chunkMessage(message)
-{
-	if(message.length <= 120)
-	{
-		return message;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 // Send an update request
 function update()
 {
@@ -338,7 +329,7 @@ function update()
 function executeUpdate(names)
 {
 	// Split the returned usernames by comma
-	var returned = (names.split("|")[0]).split(",");
+	var returned = (names.split('\n')[0]).split(",");
 	var counter = 2;
 	$('#users').empty();
 

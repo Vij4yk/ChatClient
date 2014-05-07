@@ -82,13 +82,13 @@ function sendMessage()
 	if(input.val() != "" || input.val() == 'undefined')
 	{
 		// Check for valid length
-		var message = chunkMessage(input.val());
-		if(message == false)
+		var message = input.val();
+		if(message.length > 100)
 			alert("Message length must be less than 99");
 		else
 		{
 			// Send the message
-			var command = "SEND " + to_user + "|" + message;
+			var command = "SEND " + to_user + '\n' + message;
 			window.opener.commandFromChild(command);
 			input.val('');
 			input.focus();
@@ -101,7 +101,7 @@ function sendMessage()
 // Send emoticon
 function sendEmoticon(url)
 {
-	window.opener.commandFromChild("SEND " + to_user + "|" + "emoticon:" + url);
+	window.opener.commandFromChild("SEND " + to_user + '\n' + "emoticon:" + url);
 	$('#smile').click();
 	$('#messages').append(makeMessageSelf("emoticon:" + url));
 	$('#messages').scrollTop($('#messages')[0].scrollHeight);
@@ -116,7 +116,7 @@ function sendImage(file)
 		var contents = event.target.result;
 
 		// add these line of code to send it to the chat server
-		//window.opener.commandFromChild("SEND " + to_user + "|" + "upload:" + contents)
+		//window.opener.commandFromChild("SEND " + to_user + '\n' + "upload:" + contents)
 		// $('#messages').append(makeMessageSelf("upload:" + contents));
 		// $('#messages').scrollTop($('#messages')[0].scrollHeight);
 
@@ -185,16 +185,4 @@ function makeMessageFrom(user, message)
 		html = html + '<div class="from_message">' + message + '</div>';
 	html += '</div>';
 	return html;
-}
-
-function chunkMessage(message)
-{
-	if(message.length <= 99)
-	{
-		return message;
-	}
-	else
-	{
-		return false;
-	}
 }
